@@ -205,17 +205,3 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-
-# GDPR / Data privacy — never commit raw data, derived outputs, or figures
-data/
-diagnostics/
-figures/
-narrative_embedding_clustering/outputs/
-narrative_embedding_clustering/reviewer_ablation_results/
-narrative_embedding_clustering/final result/
-*.csv
-*.xlsx
-*.xls
-*.npy
-*.pkl
-*.pickle

@@ -1,4 +1,3 @@
-import os
 import sys
 import warnings
 import numpy as np
@@ -1130,12 +1129,8 @@ def main():
         data_path = Path(sys.argv[1])
         out_dir = data_path.parent
     else:
-        data_path = Path(os.environ.get("STUDY2_ITEMWISE_PATH", "data/itemwise.csv"))
+        data_path = base_dir / "data" / "DigiArvi_25_itemwise.csv"
         out_dir = base_dir
-        if not data_path.exists():
-            raise SystemExit(
-                "Please provide an input CSV path as argument or set STUDY2_ITEMWISE_PATH env var."
-            )
     figures_dir = out_dir / "figures"
 
     df = pd.read_csv(data_path)

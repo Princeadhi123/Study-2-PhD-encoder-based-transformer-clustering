@@ -1,4 +1,3 @@
-import os
 import sys
 from pathlib import Path
 import re
@@ -193,8 +192,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         run(Path(sys.argv[1]))
     else:
-        default = os.environ.get("STUDY2_MARKS_PATH")
-        if default:
-            run(Path(default))
-        else:
-            raise SystemExit("Usage: python subjectwise_by_cluster.py <marks.xlsx>\nOr set STUDY2_MARKS_PATH env var.")
+        run(base / "data" / "EQTd_DAi_25_cleaned 3_1 for Prince.xlsx")
