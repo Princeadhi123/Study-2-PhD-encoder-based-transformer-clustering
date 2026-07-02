@@ -15,6 +15,7 @@ Part 7:  EXTERNAL VALIDITY — IRT theta + self-perception (independent of clust
 Outputs: narrative_embedding_clustering/reviewer_ablation_results/
 """
 
+import os
 import sys
 import warnings
 from pathlib import Path
@@ -63,8 +64,9 @@ EMB_PATH = OUTPUTS_ROOT / "template_A" / "all_MiniLM_L6_v2" / "embeddings.npy"
 INDEX_PATH = OUTPUTS_ROOT / "template_A" / "all_MiniLM_L6_v2" / "embeddings_index.csv"
 NAR_CLUSTERS_PATH = OUTPUTS_ROOT / "template_A" / "all_MiniLM_L6_v2" / "narrative_clusters.csv"
 
-# External data path (for Part 7)
-DATA_PATH = BASE_DIR / "data" / "EQTd_DAi_25_cleaned 3_1 for Prince.xlsx"
+# External data path (for Part 7) — set via env var to avoid hardcoding PII filenames
+_ext_env = os.environ.get("STUDY2_EXTERNAL_DATA_PATH")
+DATA_PATH = Path(_ext_env) if _ext_env else BASE_DIR / "data" / "external_data.xlsx"
 
 K_RANGE = range(2, 11)
 COVARIANCE_TYPES = ("full", "diag", "tied", "spherical")

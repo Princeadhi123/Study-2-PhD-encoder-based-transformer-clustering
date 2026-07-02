@@ -31,9 +31,9 @@ At the top level of `Study-2` you will typically have:
 - **`compare_models_final.py`**  
   Aggregates metrics from various template/model combinations to identify the best overall performing model based on a composite score of internal validity, external agreement (ARI), and predictive power (ANOVA).
 
-- **`data/`**  
-  - `DigiArvi_25_itemwise.csv` – default input for `cluster_knowledge_trajectories.py` (item-level responses).  
-  - `EQTd_DAi_25_cleaned 3_1 for Prince.xlsx` – default input for `subjectwise_by_cluster.py` (subject marks).
+- **`data/`** *(not committed — see GDPR section below)*  
+  - `itemwise.csv` – example placeholder for item-level responses fed to `cluster_knowledge_trajectories.py`.  
+  - `marks.xlsx` – example placeholder for subject marks fed to `subjectwise_by_cluster.py`.
 
 - **`diagnostics/`** *(created by the numeric baseline + subjectwise scripts; reused by the narrative pipeline)*  
   - `cluster input features/` – derived per-student features and merged marks+clusters.  
@@ -82,21 +82,21 @@ pip install numpy pandas scipy scikit-learn matplotlib seaborn umap-learn openpy
 
 ## 3. Input data formats
 
-### 3.1. Itemwise response file (`DigiArvi_25_itemwise.csv`)
+### 3.1. Itemwise response file
 
-The clustering pipeline expects a **long-format** CSV with at least:
+Example: `itemwise.csv`.  The clustering pipeline expects a **long-format** CSV with at least:
 
-- **`IDCode`** – student identifier.
+- **`IDCode`** – student identifier.  **GDPR note:** pseudonymise or hash this column before sharing any outputs.
 - **`orig_order`** – original item order *within each student*. Used for streak/consecutive features.
 - **`response`** – binary correctness indicator (0/1).
 - **`response_time_sec`** – response time in **seconds**.
 
 Optional columns:
-- **`sex`** – used for external validity checks.
+- **`sex`** – demographic data.  Only include if legally justified and documented in your ethics protocol; drop before publishing outputs.
 
-### 3.2. Subject-wise marks file (`EQTd_DAi_25_cleaned 3_1 for Prince.xlsx`)
+### 3.2. Subject-wise marks file
 
-`subjectwise_by_cluster.py` expects an Excel file with:
+Example: `marks.xlsx`.  `subjectwise_by_cluster.py` expects an Excel file with:
 - A student ID column (auto-detected).
 - One or more subject columns (e.g. `s1`, `s2`...).
 - Optionally a total/overall column.
@@ -105,11 +105,16 @@ Optional columns:
 
 ## 4. Running the clustering pipeline
 
-### 4.1. Default run (using repository data)
+### 4.1. Default run
 
-From the `Study-2` directory:
+Set the input path via argument or env var:
 
 ```bash
+# Via argument
+python cluster_knowledge_trajectories.py data/itemwise.csv
+
+# Or via env var
+set STUDY2_ITEMWISE_PATH=data/itemwise.csv
 python cluster_knowledge_trajectories.py
 ```
 
@@ -153,6 +158,10 @@ Under `diagnostics/`:
 After running the numeric clustering, link to subject marks:
 
 ```bash
+python subjectwise_by_cluster.py data/marks.xlsx
+
+# Or via env var
+set STUDY2_MARKS_PATH=data/marks.xlsx
 python subjectwise_by_cluster.py
 ```
 
@@ -226,3 +235,32 @@ python compare_models_final.py
 ```
 
 This helps identify which template and embedding model combination yields the best balance of internal structure, agreement with numeric baselines (AICc), and predictive power for subject grades.
+
+---
+
+## 9. GDPR & Data-Privacy Compliance
+
+This repository is intended for **code sharing only**.  No raw student data, identifiers, or derived outputs are committed to version control.
+
+### 9.1 What this repository does NOT contain
+- No real student IDs in source code.
+- No raw response or marks files (see `.gitignore`).
+- No diagnostic CSVs / figures with linked identifiers.
+
+### 9.2 Before you share ANY output
+1. **Pseudonymise IDs** — use `gdpr_utils.hash_id()` (SHA-256 with a per-study salt) or replace `IDCode` with random tokens before exporting results.
+2. **Drop demographic columns** — remove `sex`, `gender`, `name`, `email`, `dob`, etc., unless legally justified and covered by your ethics protocol.
+3. **Review figures** — ensure no axis labels, annotations, or hover-tooltips expose raw IDs.
+4. **Set a strong salt** — change the default in `gdpr_utils.py` or export `ID_HASH_SALT`.
+
+### 9.3 Running with your own data
+Set paths via arguments or environment variables so no PII filenames end up in shell history or committed code:
+
+```bash
+set STUDY2_ITEMWISE_PATH=C:\secure\itemwise.csv
+set STUDY2_MARKS_PATH=C:\secure\marks.xlsx
+set STUDY2_EXTERNAL_DATA_PATH=C:\secure\external.xlsx
+
+python cluster_knowledge_trajectories.py
+python subjectwise_by_cluster.py
+```
